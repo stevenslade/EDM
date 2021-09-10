@@ -1,0 +1,23 @@
+{
+  "name": "edm",
+  "version": "1.0.0",
+  "description": "*EDM is a employee database manager.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevenslade/EDM.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stevenslade/EDM/issues"
+  },
+  "homepage": "https://github.com/stevenslade/EDM#readme",
+  "dependencies": {
+    "inquirer": "^8.1.2",
+    "mysql2": "^2.3.0"
+  }
+}
