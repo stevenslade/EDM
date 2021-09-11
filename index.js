@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
-// Connect to database
+//Connect to database
 const db = mysql.createConnection(
   {
     host: 'localhost',
@@ -9,15 +9,15 @@ const db = mysql.createConnection(
     user: 'root',
     // MySQL password
     password: '',
-    database: 'classlist_db'  //Need to update to my database 
+    database: 'company_db'
   },
-  console.log(`Connected to the classlist_db database.`)  //update db name
+  console.log(`Connected to the company_db database.`)
 );
 
 // Query database
-db.query('SELECT * FROM tableName', function (err, results) {
-  console.log(results);
-});
+// db.query('SELECT * FROM tableName', (err, results) => {
+//   console.log(results);
+// });
 
 
 function manageCompany () {
@@ -33,47 +33,61 @@ function manageCompany () {
   .then((data) => {
     console.log(data.mainMenu);
     let userChoice = data.mainMenu;
-  
     //SWITCH CASE DEPEDNING ON MAINMENU VALUE
-
-switch (userChoice) {
-  case 'View All Departments':
-    console.log('Look at all those departments');
-    break;
-  case 'View all Roles':
-    console.log('So many roles from which to choose');
-    break;
-    case 'View All Employees':
-      console.log('Do we really need this many people');
-      break;
-    case 'Add a Department':
-      console.log('Grow the business, add a department');
-      break;
+    switch (userChoice) {
+      case 'View All Departments':
+        console.log('Look at all those departments');
+        break;
+      case 'View all Roles':
+        console.log('So many roles from which to choose');
+        break;
+      case 'View All Employees':
+          console.log('Do we really need this many people');
+          break;
+      case 'Add a Department':
+          console.log('Grow the business, add a department');
+          addADepartment();
+          break;
       case 'Add a Role':
-    console.log('Add a Role');
-    break;
-    case 'Add an Employee':
-      console.log('Add en Employee');
-      break;
-    case 'Update an Employee Role':
-      console.log('Update an Employee Role');
-      break;
-  default:
-    console.log('something went wrong');
-    break;
-}
-
-
-    //RUN A FUNCTION
-
-    //Case of Add employee
-      //
-
-    //CASE of UPDATE ROLE
-      //RUN my update Role function
-    
+        console.log('Add a Role');
+        break;
+      case 'Add an Employee':
+          console.log('Add en Employee');
+          break;
+      case 'Update an Employee Role':
+          console.log('Update an Employee Role');
+          break;
+      default:
+          console.log('something went wrong');
+          break;
+    }
   });
 }
+
+function addADepartment () {
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      message: 'Please enter name of department to add.',
+      name: 'newDepartment',
+      //validation can go here
+    },
+  ])
+  .then((data) => {
+    console.log("newdepartment: ", data.newDepartment);
+    let newDepartmentName = data.newDepartment;
+
+    db.query('INSERT INTO department (dep_name) VALUES (?);', newDepartmentName, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result);
+    });
+  });
+  manageCompany ();
+}
+
 
 function ViewALLEMployess () {
   //SELECT CONTENT THAT DISPLAY THE JOINED TABLE
@@ -107,7 +121,6 @@ function updateEmployeeRole () {
 
 
 }
-
 
 
 //Need to call the program to start it
