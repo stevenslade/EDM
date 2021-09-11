@@ -82,10 +82,12 @@ function addADepartment () {
       if (err) {
         console.log(err);
       }
-      console.log(result);
+      //console.log(result);
+      manageCompany ();
     });
   });
-  manageCompany ();
+  //This is not working it runs before getting input
+  //manageCompany ();
 }
 
 
