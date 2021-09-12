@@ -1,6 +1,9 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
+//This brings in dotenv so I can use an .env file
+require('dotenv').config();
+
 //Connect to database
 const db = mysql.createConnection(
   {
@@ -8,7 +11,7 @@ const db = mysql.createConnection(
     // MySQL username,
     user: 'root',
     // MySQL password
-    password: '',
+    password: process.env.DB_PASSWORD,
     database: 'company_db'
   },
   console.log(`Connected to the company_db database.`)
@@ -27,7 +30,7 @@ function manageCompany () {
       type: 'list',
       message: 'What would you like to do?',
       name: 'mainMenu',
-      choices: ['View All Departments', 'View all Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role' ],
+      choices: ['View All Departments', 'View all Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Exit' ],
     },
   ])
   .then((data) => {
@@ -37,6 +40,7 @@ function manageCompany () {
     switch (userChoice) {
       case 'View All Departments':
         console.log('Look at all those departments');
+        viewAllDepartments();
         break;
       case 'View all Roles':
         console.log('So many roles from which to choose');
@@ -57,10 +61,29 @@ function manageCompany () {
       case 'Update an Employee Role':
           console.log('Update an Employee Role');
           break;
+      case 'Exit':
+          console.log('Thanks for using EDM and have a nice day!');
+          process.exit();
+          break;
       default:
           console.log('something went wrong');
           break;
     }
+  });
+}
+
+// Query database
+// db.query('SELECT * FROM tableName', (err, results) => {
+//   console.log(results);
+// });
+
+function viewAllDepartments () {
+  db.query('SELECT * FROM department', (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(result);
+    manageCompany ();
   });
 }
 
@@ -86,8 +109,6 @@ function addADepartment () {
       manageCompany ();
     });
   });
-  //This is not working it runs before getting input
-  //manageCompany ();
 }
 
 
