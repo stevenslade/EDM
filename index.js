@@ -10,7 +10,7 @@ const db = mysql.createConnection(
     host: 'localhost',
     // MySQL username,
     user: 'root',
-    // MySQL password
+    // MySQL password but now I'm using .env because I'm that cool
     password: process.env.DB_PASSWORD,
     database: 'company_db'
   },
@@ -44,9 +44,11 @@ function manageCompany () {
         break;
       case 'View all Roles':
         console.log('So many roles from which to choose');
+        viewAllRoles ();
         break;
       case 'View All Employees':
           console.log('Do we really need this many people');
+          viewAllEmployees ();
           break;
       case 'Add a Department':
           console.log('Grow the business, add a department');
@@ -87,6 +89,28 @@ function viewAllDepartments () {
   });
 }
 
+function viewAllRoles () {
+  db.query('SELECT * FROM role_tb', (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(result);
+    manageCompany ();
+  });
+
+}
+
+function viewAllEmployees () {
+  db.query('SELECT employee.first_name, role_tb.title FROM employee INNER JOIN role_tb ON employee.role_id = role_tb.id_role', (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(result);
+    manageCompany ();
+  });
+
+}
+
 function addADepartment () {
   inquirer
   .prompt([
@@ -111,14 +135,13 @@ function addADepartment () {
   });
 }
 
+function addARole () {
 
-function ViewALLEMployess () {
-  //SELECT CONTENT THAT DISPLAY THE JOINED TABLE
 
-  //RUN manage Employees again
 }
 
-function AddAnEmployee () {
+
+function addAnEmployee () {
   // inquirer function to add the needed information
 
   // add of this I will have an array of objects
@@ -141,8 +164,6 @@ function updateEmployeeRole () {
   //run inquirer prompts to collect the information to to update the rol
 
   //UPDAte
-
-
 }
 
 
