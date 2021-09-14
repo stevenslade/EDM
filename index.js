@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const cTable = require('console.table');
 
 //This brings in dotenv so I can use an .env file
 require('dotenv').config();
@@ -84,7 +85,7 @@ function viewAllDepartments () {
     if (err) {
       console.log(err);
     }
-    console.log(result);
+    console.table(result);
     manageCompany ();
   });
 }
@@ -94,7 +95,7 @@ function viewAllRoles () {
     if (err) {
       console.log(err);
     }
-    console.log(result);
+    console.table(result);
     manageCompany ();
   });
 
@@ -105,7 +106,7 @@ function viewAllEmployees () {
     if (err) {
       console.log(err);
     }
-    console.log(result);
+    console.table(result);
     manageCompany ();
   });
 
@@ -161,37 +162,31 @@ function addARole () {
     let newRoleSalary = data.newRoleSalary;
     let newRoleDepartmentId = data.newRoleDepartmentId;
 
-    // console.log("newRoleName: ",data.newRoleName);
-    // console.log("newRoleSalary: ",data.newRoleSalary);
-    // console.log("newRoleDepartmentId: ",data.newRoleDepartmentId);
-
     db.query('INSERT INTO role_tb (title, salary, department_id ) VALUES (?,?,?);', [newRoleName, newRoleSalary, newRoleDepartmentId], (err, result) => {
       if (err) {
         console.log(err);
       }
      manageCompany ();
-    });  // This closes the db interaction 
+    });
   });
 }
 
 
 function addAnEmployee () {
-  // inquirer function to add the needed information
+  
 
-  // add of this I will have an array of objects
 
-  // .then((data)) => {
 
-  //   //INSERT
-  //   INSERT INTO employee (first_name, last_name)
-  //   VALUES
-  //     (varibaleinputfirstname, varibale input for last name);
 
-  //   INSERT INTO role (title, salary, department_id)
-  //   VALUES
-  //     (variablestitle, salaryvariable, depavariable);
-  // });
 
+
+
+
+
+
+
+
+  
 }
 
 function updateEmployeeRole () {
