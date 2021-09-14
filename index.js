@@ -55,7 +55,7 @@ function manageCompany () {
           addADepartment();
           break;
       case 'Add a Role':
-        console.log('Add a Role');
+        addARole ();
         break;
       case 'Add an Employee':
           console.log('Add en Employee');
@@ -101,7 +101,7 @@ function viewAllRoles () {
 }
 
 function viewAllEmployees () {
-  db.query('SELECT employee.first_name, role_tb.title FROM employee INNER JOIN role_tb ON employee.role_id = role_tb.id_role', (err, result) => {
+  db.query('SELECT employee.id_employee, employee.first_name, employee.last_name, role_tb.title, role_tb.salary FROM employee INNER JOIN role_tb ON employee.role_id = role_tb.id_role', (err, result) => {
     if (err) {
       console.log(err);
     }
@@ -122,7 +122,6 @@ function addADepartment () {
     },
   ])
   .then((data) => {
-    console.log("newdepartment: ", data.newDepartment);
     let newDepartmentName = data.newDepartment;
 
     db.query('INSERT INTO department (dep_name) VALUES (?);', newDepartmentName, (err, result) => {
@@ -136,8 +135,43 @@ function addADepartment () {
 }
 
 function addARole () {
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      message: 'Please enter the name of the new role.',
+      name: 'newRoleName',
+      //validation can go here
+    },
+    {
+      type: 'input',
+      message: 'Please enter the salary of this position.',
+      name: 'newRoleSalary',
+      //validation can go here
+    },
+    {
+      type: 'input',
+      message: 'Please enter the department id of this new role.',
+      name: 'newRoleDepartmentId',
+      //validation can go here
+    },
+  ])
+  .then((data) => {
+    let newRoleName = data.newRoleName;
+    let newRoleSalary = data.newRoleSalary;
+    let newRoleDepartmentId = data.newRoleDepartmentId;
 
+    // console.log("newRoleName: ",data.newRoleName);
+    // console.log("newRoleSalary: ",data.newRoleSalary);
+    // console.log("newRoleDepartmentId: ",data.newRoleDepartmentId);
 
+    db.query('INSERT INTO role_tb (title, salary, department_id ) VALUES (?,?,?);', [newRoleName, newRoleSalary, newRoleDepartmentId], (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+     manageCompany ();
+    });  // This closes the db interaction 
+  });
 }
 
 
