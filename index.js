@@ -106,7 +106,7 @@ function viewAllEmployees () {
   // });
 
   //This delivers everything but the managers name commented out to work on the above query
-    db.query('SELECT employee.id_employee, employee.first_name, employee.last_name, role_tb.title, department.dep_name, role_tb.salary FROM employee LEFT JOIN role_tb ON employee.role_id = role_tb.id_role LEFT JOIN department ON role_tb.department_id = department.id_dept', (err, result) => {
+    db.query('SELECT employee.id_employee "ID", employee.first_name "First Name", employee.last_name "Last Name", role_tb.title "Title", department.dep_name "Department", role_tb.salary "Salary", employee.manager_id "Manager ID" FROM employee LEFT JOIN role_tb ON employee.role_id = role_tb.id_role LEFT JOIN department ON role_tb.department_id = department.id_dept', (err, result) => {
     if (err) {
       console.log(err);
     }
@@ -115,7 +115,7 @@ function viewAllEmployees () {
   });
 }
 
-//This sttaement was an attempt to link the manager name to the table
+//This statement was an attempt to link the manager name to the table
 //'SELECT employee.id_employee, employee.first_name, employee.last_name, role_tb.title, department.dep_name, role_tb.salary CONCAT(manager_id.first_name, manager_id.last_name) AS manager FROM employee LEFT JOIN role_tb ON employee.role_id = role_tb.id_role LEFT JOIN department ON role_tb.department_id = department.id_dept LEFT JOIN employee manager ON manager_id = employee.manager_id'
 
 //This statement worked and gave me everything but the manager name
@@ -218,23 +218,32 @@ function insertNewRole (newRoleName, newRoleSalary, newRoleDepartmentId) {
   });
 }
 
-function addAnEmployee () {
-  // need a function to find the roles
-  // let roles = findRoles ();
-  // console.log('roles: ', roles);
+//Adding an Employee Starts here
+function addAnEmployee (){
+  //starts with getting a list of managers
+  db.query('SELECT CONCAT(first_name," ", last_name) "ManagerName" FROM employee WHERE manager_id IS NULL', (err, results) => {
+    let managerArray =[];
+    for(let i =0; i <results.length; i ++){
+     managerArray.push(results[i].ManagerName);
+    }
+    getRoleList(managerArray);
+  });
+}
+
+function getRoleList (managerArray) {
+  //get my list of roles
+  let managerList = managerArray;
   db.query('SELECT title FROM role_tb', (err, results) => {
     let roleArray =[];
     for(let i =0; i <results.length; i ++){
      roleArray.push(results[i].title);
     }
-    //call the next function?
-    getEmployeeInfo(roleArray);
+    //call the next function
+    getEmployeeInfo(roleArray, managerList);
   });
-  // need a function to find the managers
-  // need an inquire function to collect firstname and last name and give options for roles and manager
 }
 
-function getEmployeeInfo (roleArray) {
+function getEmployeeInfo (roleArray, managerList) {
   inquirer
   .prompt([
     {
@@ -254,61 +263,90 @@ function getEmployeeInfo (roleArray) {
       message: 'Please select the role of the new employee.',
       name: 'newEmpRole',
       choices: roleArray,
-      //validation can go here
     },
     {
-      type: 'input',
+      type: 'list',
       message: "Please select the new employee's manager.",
       name: 'newEmpManager',
-      //validation can go here
+      choices: managerList,
     },
   ])
   .then((data) => {
     let newEmpFirst = data.newEmpFirst;
     let newEmpSecond = data.newEmpSecond;
     let newEmpRole = data.newEmpRole;
-    let newEmpManager = data.newEmpManager;
+    let newEmpManager = data.newEmpManager; //this is a fullname
 
-    let newEmpManager =1;
-
-    db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id ) VALUES (?,?,?,?);', [newEmpFirst, newEmpSecond, newEmpRole, newEmpManager], (err, result) => {
+    db.query(`SELECT id_employee FROM employee WHERE CONCAT(first_name," ", last_name) = ?`, newEmpManager ,(err, result) => {
       if (err) {
         console.log(err);
       }
-     manageCompany ();
+      console.log('newEmpManagerresult: ', result);
+      let newEmpManagerId = result[0].id_employee;
+      console.log('newEmpManagerId: ', newEmpManagerId);
+      getRoleIdfromTitle (newEmpFirst, newEmpSecond, newEmpRole, newEmpManagerId);
     });
   });
 }
 
-function updateEmployeeRole () {
-  // First we need a list of current employees
+function getRoleIdfromTitle(newEmpFirst, newEmpSecond, newEmpRole, newEmpManagerId){
+db.query(`SELECT id_role FROM role_tb WHERE title = ?`, newEmpRole ,(err, result) => {
+  if (err) {
+    console.log(err);
+  }
+  let newEmpRoleId = result[0].id_role;
+  insertNewEmployee (newEmpFirst, newEmpSecond, newEmpRoleId, newEmpManagerId);
+});
+}
 
-  db.query('SELECT employee.id_employee, employee.first_name, employee.last_name FROM employee', (err, result) => {
+function insertNewEmployee (newEmpFirst, newEmpSecond, newEmpRole, newEmpManager){
+  db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id ) VALUES (?,?,?,?);', [newEmpFirst, newEmpSecond, newEmpRole, newEmpManager], (err, result) => {
     if (err) {
       console.log(err);
     }
-    console.log("result from SELECT employee:", result);  // This is a list of employees first and last names and employee id
-    //iterate over employee list building an individual array
-    let currentEmployeeArray =[];
-    let currentEmployeeString ="";
-    let employeeList = [];
-    for (let i=0; i< result.length; i++) {
-      currentEmployeeArray =[];
-      currentEmployeeArray.push(result[i].id_employee);
-      currentEmployeeArray.push(result[i].first_name);
-      currentEmployeeArray.push(result[i].last_name);
-
-      currentEmployeeString = result[i].id_employee + " " + result[i].first_name + " " + result[i].last_name;
-      //employeeList.push(currentEmployeeArray);
-      employeeList.push(currentEmployeeString);
-    }
-    //console.log(currentEmployeeString);
-    console.log('employeeList ', employeeList);
-    determineEmployee (employeeList);
+   manageCompany ();
   });
 }
 
-function determineEmployee (employeeList) {
+
+//Start updateEmployee Section
+function updateEmployeeRole () {
+  // First we need a list of current employees
+
+  //SELECT CONCAT(first_name," ", last_name) "ManagerName" FROM employee WHERE manager_id IS NULL
+
+  db.query('SELECT CONCAT(first_name, " ", last_name) "employee" FROM employee', (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    //iterate over employee list building an individual array
+    let employeeList = [];
+    for (let i=0; i< result.length; i++) {
+      employeeList.push(result[i].employee);
+    }
+    console.log('employeeList ', employeeList);
+    getRolesUpdate (employeeList);
+  });
+}
+
+//Most likely need a function in here to rind the roles - im sure its above somewhere
+
+function getRolesUpdate (employeeList){
+  db.query('SELECT title FROM role_tb', (err, results) => {
+    let roleArray =[];
+    for(let i =0; i <results.length; i ++){
+     roleArray.push(results[i].title);
+    }
+    console.log('employeeList: ', employeeList);
+    console.log('roleArray: ', roleArray);
+    determineEmployee(employeeList, roleArray);
+  });
+}
+
+
+//then go into the inquirer prompt for choices
+
+function determineEmployee (employeeList, roleArray) {
   //Find out which employee to update
   inquirer
   .prompt([
@@ -318,14 +356,44 @@ function determineEmployee (employeeList) {
       name: 'selectedEmployee',
       choices: employeeList,
     },
+    {
+      type: 'list',
+      message: 'Indicate the employees new role',
+      name: 'selectedRole',
+      choices: roleArray,
+    },
   ])
   .then((data) => {
-    console.log(data.selectedEmployee);
-    console.log('Selected Employees ID: ', data.selectedEmployee[0]);
-    
-    manageCompany ();
+    console.log('data.selectedRole: ', data.selectedRole);
+    let selectedEmployee = data.selectedEmployee;
+    //I need to change selectedRole into a number
+    db.query(`SELECT id_role FROM role_tb WHERE title = ?`, data.selectedRole ,(err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      let selectedRoleId = result[0].id_role;
+      updateRole (selectedRoleId, selectedEmployee);    
+    });
   });
 }
+
+function updateRole (selectedRoleId, selectedEmployee) {
+  db.query('UPDATE employee SET role_id = ? WHERE CONCAT(first_name, " ", last_name) = ?;', [selectedRoleId, selectedEmployee], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+   manageCompany ();
+  });
+}
+
+//UPDATE employee SET role_id = ? WHERE CONCAT(first_name, " ", last_name) = ? VALUES (?,?)
+// db.query('UPDATE employee SET role_id = ? WHERE CONCAT(first_name, " ", last_name) = ? VALUES (?,?)', [selectedRoleId, selectedEmployee], (err, result) => {
+//   if (err) {
+//     console.log(err);
+//   }
+//  manageCompany ();
+// });
+
 
 
 //Need to call the program to start it
