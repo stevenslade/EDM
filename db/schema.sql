@@ -31,6 +31,3 @@ CREATE TABLE employee (
   FOREIGN KEY (manager_id) REFERENCES employee(id_employee)
   ON DELETE SET NULL
 );
-
-
-
