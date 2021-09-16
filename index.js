@@ -319,7 +319,6 @@ function determineEmployee (employeeList, roleArray) {
     },
   ])
   .then((data) => {
-    console.log('data.selectedRole: ', data.selectedRole);
     let selectedEmployee = data.selectedEmployee;
     //I need to change selectedRole into a number
     db.query(`SELECT id_role FROM role_tb WHERE title = ?`, data.selectedRole ,(err, result) => {
@@ -338,8 +337,10 @@ function updateRole (selectedRoleId, selectedEmployee) {
       console.log(err);
     }
    manageCompany ();
-  });
-}
+  }
+  )
+};
+
 
 function init (){
   console.log("Welcome to your Employee Database Manager");
@@ -347,5 +348,4 @@ function init (){
 }
 
 //Need to call the program to start it
-init ();
-
+init();
