@@ -1,5 +1,5 @@
 # EDM
-* Employee Database Manager is a command line app that allows you to manage a database of your companies employees.
+* Employee Database Manager is a command line app that allows you to manage a database of your company's employees.
 
 ## Table of Contents
 
@@ -42,7 +42,7 @@
 
 ## <a id="usage"></a>Usage
 
-* The repo can be forked and then the required modules installed as per above.  The application is run from the command line by entering "node server.js"
+* The repo can be forked and then the required modules installed as per above.  The application is run from the command line by entering "node index.js"
 
 ## <a id="contributing"></a>Contributing
 
@@ -58,5 +58,5 @@
 
 ## <a id="sample"></a>Video Instructions for using App 
 
-* [EDM Walk Thru](https://salty-brushlands-66923.herokuapp.com/)
+* [EDM Walk Thru](https://drive.google.com/file/d/1ZTKlxNTM5ye_L0m6QJOW2zQSRtx7HhgY/view)
 
