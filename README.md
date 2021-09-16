@@ -28,7 +28,7 @@
 
 ## <a id="screenshot"></a>Screenshot
 
-![Screenshot of Deployed App](./assets/images/MNSS.png)
+![Screenshot of App in use](./assets/images/EDMSS.png)
 
 ## <a id="installation"></a>Installation
 
@@ -50,7 +50,7 @@
 
 ## <a id="collaborators"></a>Collaborators
 
-* sole author
+* Ben Slinde - sole author
 
 ## <a id="questions"></a>Questions
 

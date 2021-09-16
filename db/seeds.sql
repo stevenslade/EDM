@@ -20,6 +20,7 @@ VALUES ("Bill", "Lumbergh", 3, null),
        ("Peter", "Gibbons", 2, 1),
        ("Michael", "Bolton", 2, 1),
        ("Anne", "Wenworth", 1, 1),
-       ("Milton", "Millsworth", 7, null),
-       ("Larry", "Lawson", 8, 5);
+       ("Tom", "Smykowski", 7, null),
+       ("Larry", "Lawson", 8, 5),
+       ("Milton", "Waddams", 2, 4);
 
